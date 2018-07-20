@@ -1,0 +1,13 @@
+dependencies:
+  - jumperfly.java
+
+galaxy_info:
+  role_name: jenkins
+  author: jumperfly
+  description: ansible-role-jenkins
+  license: Apache
+  min_ansible_version: "2.0"
+  platforms:
+    - name: EL
+      versions:
+        - "7"

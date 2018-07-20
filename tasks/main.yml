@@ -1,0 +1,57 @@
+- name: Configure yum repo
+  yum_repository:
+    name: jenkins
+    description: Jenkins YUM repo
+    baseurl: "{{ jenkinsYumUrl }}"
+    gpgcheck: "{{ jenkinsYumGpgCheck }}"
+    gpgkey: "{{ jenkinsYumGpgKey }}"
+- name: Ensure {{ jenkinsPackage }} is installed and up to date
+  package: name={{ jenkinsPackage }} state=latest
+  notify: restart jenkins
+- name: Disable setup wizard
+  lineinfile:
+    path: "{{ jenkinsConfig }}"
+    regexp: ^JENKINS_JAVA_OPTIONS=.*
+    line: JENKINS_JAVA_OPTIONS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
+- name: Disable CLI remoting
+  copy:
+    src: jenkins.CLI.xml
+    dest: "{{ jenkinsHome }}/"
+    owner: jenkins
+    group: jenkins
+  notify: restart jenkins
+- name: Ensure jenkins is started and enabled
+  service: name={{ jenkinsService }} state=started enabled=yes
+- name: Ensure config.xml is created
+  wait_for: path={{ jenkinsHome }}/config.xml
+- name: Enable CSRF Protection
+  xml:
+    path: "{{ jenkinsHome }}/config.xml"
+    xpath: "{{ item.xpath }}"
+    attribute: "{{ item.attribute }}"
+    value: "{{ item.value }}"
+  loop:
+    - { xpath: /hudson/markupFormatter, attribute: class, value: hudson.markup.EscapedMarkupFormatter }
+    - { xpath: /hudson/crumbIssuer, attribute: class, value: hudson.security.csrf.DefaultCrumbIssuer }
+    - { xpath: /hudson/crumbIssuer/excludeClientIPFromCrumb, attribute: null, value: "false" }
+  notify: restart jenkins
+# Due to a bug in the Jenkins module it's currently necessary to use state: present first in order to install dependencies
+- name: Install plugins
+  jenkins_plugin:
+    name: "{{ item }}"
+    state: present
+    url_username: "{{ jenkinsAdminUsername }}"
+    url_password: "{{ jenkinsAdminPassword }}"
+    with_dependencies: yes
+    timeout: 120
+  loop: "{{ jenkinsPlugins }}"
+  notify: restart jenkins
+- name: Update plugins
+  jenkins_plugin:
+    name: "{{ item }}"
+    state: latest
+    url_username: "{{ jenkinsAdminUsername }}"
+    url_password: "{{ jenkinsAdminPassword }}"
+    with_dependencies: yes
+  loop: "{{ jenkinsPlugins }}"
+  notify: restart jenkins
