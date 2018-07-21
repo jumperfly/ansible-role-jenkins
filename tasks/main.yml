@@ -22,6 +22,8 @@
   notify: restart jenkins
 - name: Ensure jenkins is started and enabled
   service: name={{ jenkinsService }} state=started enabled=yes
+- name: Wait for Jenkins to start
+  wait_for: port=8080 delay=60 timeout=300
 - name: Ensure config.xml is created
   wait_for: path={{ jenkinsHome }}/config.xml
 - name: Enable CSRF Protection
@@ -35,7 +37,6 @@
     - { xpath: /hudson/crumbIssuer, attribute: class, value: hudson.security.csrf.DefaultCrumbIssuer }
     - { xpath: /hudson/crumbIssuer/excludeClientIPFromCrumb, attribute: null, value: "false" }
   notify: restart jenkins
-# Due to a bug in the Jenkins module it's currently necessary to use state: present first in order to install dependencies
 - name: Install plugins
   jenkins_plugin:
     name: "{{ item }}"
@@ -43,15 +44,6 @@
     url_username: "{{ jenkinsAdminUsername }}"
     url_password: "{{ jenkinsAdminPassword }}"
     with_dependencies: yes
-    timeout: 120
-  loop: "{{ jenkinsPlugins }}"
-  notify: restart jenkins
-- name: Update plugins
-  jenkins_plugin:
-    name: "{{ item }}"
-    state: latest
-    url_username: "{{ jenkinsAdminUsername }}"
-    url_password: "{{ jenkinsAdminPassword }}"
-    with_dependencies: yes
+    timeout: 300
   loop: "{{ jenkinsPlugins }}"
   notify: restart jenkins

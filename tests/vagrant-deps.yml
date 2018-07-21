@@ -1,0 +1,6 @@
+- hosts: all
+  become: yes
+  tasks:
+  - command: python /vagrant/tests/requirements-gen.py /vagrant/meta/main.yml /tmp/requirements.yml
+  - command: ansible-galaxy install -r /tmp/requirements.yml -p /etc/ansible/roles
+  - synchronize: src=/vagrant/ dest=/etc/ansible/roles/jenkins/ rsync_opts=--exclude=.git
