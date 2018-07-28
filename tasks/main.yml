@@ -20,10 +20,16 @@
     owner: jenkins
     group: jenkins
   notify: restart jenkins
-- name: Ensure jenkins is started and enabled
-  service: name={{ jenkinsService }} state=started enabled=yes
-- name: Wait for Jenkins to start
-  wait_for: port=8080 delay=60 timeout=300
+- name: Ensure jenkins is enabled
+  service: name={{ jenkinsService }} enabled=yes
+- name: Ensure jenkins is started
+  service: name={{ jenkinsService }} state=started
+  register: jenkins_start_result
+- name: Pause for 1 minute if Jenkins has just been started
+  pause: minutes=1
+  when: jenkins_start_result.changed
+- name: Ensure Jenkins is running on port 8080
+  wait_for: port=8080 timeout=300
 - name: Ensure config.xml is created
   wait_for: path={{ jenkinsHome }}/config.xml
 - name: Enable CSRF Protection
