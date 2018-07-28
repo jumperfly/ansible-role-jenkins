@@ -16,6 +16,7 @@ jenkinsPlugins:
   - maven-plugin
   - pam-auth
   - pipeline-model-definition
+  - pipeline-stage-view
   - stashNotifier
   - workflow-multibranch
   - ws-cleanup
