@@ -15,6 +15,7 @@ jenkinsPlugins:
   - m2release
   - maven-plugin
   - pam-auth
+  - pipeline-model-definition
   - stashNotifier
   - workflow-multibranch
   - ws-cleanup
