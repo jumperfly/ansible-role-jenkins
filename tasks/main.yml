@@ -2,28 +2,28 @@
   yum_repository:
     name: jenkins
     description: Jenkins YUM repo
-    baseurl: "{{ jenkinsYumUrl }}"
-    gpgcheck: "{{ jenkinsYumGpgCheck }}"
-    gpgkey: "{{ jenkinsYumGpgKey }}"
-- name: Ensure {{ jenkinsPackage }} is installed and up to date
-  package: name={{ jenkinsPackage }} state=latest
+    baseurl: "{{ jenkins_yum_url }}"
+    gpgcheck: "{{ jenkins_yum_gpg_check }}"
+    gpgkey: "{{ jenkins_yum_gpg_key }}"
+- name: Ensure {{ jenkins_package }} is installed and up to date
+  package: name={{ jenkins_package }} state=latest
   notify: restart jenkins
 - name: Disable setup wizard
   lineinfile:
-    path: "{{ jenkinsConfig }}"
+    path: "{{ jenkins_config }}"
     regexp: ^JENKINS_JAVA_OPTIONS=.*
     line: JENKINS_JAVA_OPTIONS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
 - name: Disable CLI remoting
   copy:
     src: jenkins.CLI.xml
-    dest: "{{ jenkinsHome }}/"
+    dest: "{{ jenkins_home }}/"
     owner: jenkins
     group: jenkins
   notify: restart jenkins
 - name: Ensure jenkins is enabled
-  service: name={{ jenkinsService }} enabled=yes
+  service: name={{ jenkins_service }} enabled=yes
 - name: Ensure jenkins is started
-  service: name={{ jenkinsService }} state=started
+  service: name={{ jenkins_service }} state=started
   register: jenkins_start_result
 - name: Pause for 1 minute if Jenkins has just been started
   pause: minutes=1
@@ -31,10 +31,10 @@
 - name: Ensure Jenkins is running on port 8080
   wait_for: port=8080 timeout=300
 - name: Ensure config.xml is created
-  wait_for: path={{ jenkinsHome }}/config.xml
+  wait_for: path={{ jenkins_home }}/config.xml
 - name: Enable CSRF Protection
   xml:
-    path: "{{ jenkinsHome }}/config.xml"
+    path: "{{ jenkins_home }}/config.xml"
     xpath: "{{ item.xpath }}"
     attribute: "{{ item.attribute }}"
     value: "{{ item.value }}"
@@ -47,9 +47,9 @@
   jenkins_plugin:
     name: "{{ item }}"
     state: present
-    url_username: "{{ jenkinsAdminUsername }}"
-    url_password: "{{ jenkinsAdminPassword }}"
+    url_username: "{{ jenkins_admin_username }}"
+    url_password: "{{ jenkins_admin_password }}"
     with_dependencies: yes
     timeout: 300
-  loop: "{{ jenkinsPlugins }}"
+  loop: "{{ jenkins_plugins }}"
   notify: restart jenkins

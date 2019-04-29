@@ -1,11 +1,11 @@
-jenkinsYumUrl: http://pkg.jenkins.io/redhat
-jenkinsYumGpgCheck: yes
-jenkinsYumGpgKey: https://pkg.jenkins.io/redhat/jenkins.io.key
-jenkinsPackage: jenkins
-jenkinsService: jenkins
-jenkinsHome: /var/lib/jenkins
-jenkinsConfig: /etc/sysconfig/jenkins
-jenkinsPlugins:
+jenkins_yum_url: http://pkg.jenkins.io/redhat
+jenkins_yum_gpg_check: yes
+jenkins_yum_gpg_key: https://pkg.jenkins.io/redhat/jenkins.io.key
+jenkins_package: jenkins
+jenkins_service: jenkins
+jenkins_home: /var/lib/jenkins
+jenkins_config: /etc/sysconfig/jenkins
+jenkins_plugins:
   - active-directory
   - artifactory
   - build-timeout
@@ -20,5 +20,5 @@ jenkinsPlugins:
   - stashNotifier
   - workflow-multibranch
   - ws-cleanup
-jenkinsAdminUsername: admin
-jenkinsAdminPassword: admin
+jenkins_admin_username: admin
+jenkins_admin_password: admin
