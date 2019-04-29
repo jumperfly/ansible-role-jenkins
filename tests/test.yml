@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: default
   become: yes
   roles:
-  - jenkins
+    - jenkins

@@ -1,5 +1,6 @@
 dependencies:
-  - jumperfly.java
+  - src: jumperfly.java
+    version: v0.1.0
 
 galaxy_info:
   role_name: jenkins
