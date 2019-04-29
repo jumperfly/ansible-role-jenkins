@@ -6,7 +6,9 @@
     gpgcheck: "{{ jenkins_yum_gpg_check }}"
     gpgkey: "{{ jenkins_yum_gpg_key }}"
 - name: Ensure {{ jenkins_package }} is installed and up to date
-  package: name={{ jenkins_package }} state=latest
+  package:
+    name: "{{ jenkins_package }}"
+    state: latest
   notify: restart jenkins
 - name: Disable setup wizard
   lineinfile:
@@ -21,17 +23,25 @@
     group: jenkins
   notify: restart jenkins
 - name: Ensure jenkins is enabled
-  service: name={{ jenkins_service }} enabled=yes
+  service:
+    name: "{{ jenkins_service }}"
+    enabled: yes
 - name: Ensure jenkins is started
-  service: name={{ jenkins_service }} state=started
+  service:
+    name: "{{ jenkins_service }}"
+    state: started
   register: jenkins_start_result
 - name: Pause for 1 minute if Jenkins has just been started
-  pause: minutes=1
+  pause:
+    minutes: 1
   when: jenkins_start_result.changed
 - name: Ensure Jenkins is running on port 8080
-  wait_for: port=8080 timeout=300
+  wait_for:
+    port: 8080
+    timeout: 300
 - name: Ensure config.xml is created
-  wait_for: path={{ jenkins_home }}/config.xml
+  wait_for:
+    path: "{{ jenkins_home }}/config.xml"
 - name: Enable CSRF Protection
   xml:
     path: "{{ jenkins_home }}/config.xml"
