@@ -5,10 +5,10 @@
     baseurl: "{{ jenkins_yum_url }}"
     gpgcheck: "{{ jenkins_yum_gpg_check }}"
     gpgkey: "{{ jenkins_yum_gpg_key }}"
-- name: Ensure {{ jenkins_package }} is installed and up to date
+- name: Ensure jenkins is installed and up to date
   package:
-    name: "{{ jenkins_package }}"
-    state: latest
+    name: "{{ jenkins_package }}-{{ jenkins_version }}"
+    state: present
   notify: restart jenkins
 - name: Disable setup wizard
   lineinfile:
