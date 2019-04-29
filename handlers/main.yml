@@ -1,2 +1,2 @@
 - name: restart jenkins
-  service: name={{ jenkinsService }} state=restarted
+  service: name={{ jenkins_service }} state=restarted
